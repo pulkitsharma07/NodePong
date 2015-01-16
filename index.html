@@ -1,0 +1,170 @@
+<html>
+<head>
+	<title>Pong</title>
+	<style>
+	.pointer{
+		position: absolute;
+		width:100px;
+		height:10px;
+		background-color: red;
+		
+	}
+	.ball
+	{
+		position: absolute;
+		width:10px;
+		height:10px;
+		background-color: black; 
+		
+	}
+	.pointer[player="1"]{
+		top : 5px;
+	}
+
+	.pointer[player="2"]{
+
+	}
+	.select_room{
+		background-color: LimeGreen;
+		margin:200px;
+		padding: 50px;
+		border-radius: 10px;
+		-webkit-box-shadow: 0px 0px 30px 0px rgba(94, 223, 140, 0.88);
+		-moz-box-shadow:    0px 0px 30px 0px rgba(94, 223, 140, 0.88);
+		box-shadow:         0px 0px 30px 0px rgba(94, 223, 140, 0.88);
+	}
+	.new_room{
+		padding: 20px;
+	}
+	.make_new_room > input[type="text"]{	
+		padding: 5px;
+		display: block;
+		margin: 0;
+		width: 100%;
+		font-family: sans-serif;
+		font-size: 18px;
+		border-radius: 5px;
+	}
+	.make_new_room > input[type="text"]:focus {
+		box-shadow:  0px 0px 30px 0px rgba(248,50,50, 0.88);
+	}
+	.make_new_room> input[type="submit"] {
+		padding: 2px;
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #12cc4d), color-stop(1, #dae021) );
+	background:-moz-linear-gradient( center top, #12cc4d 5%, #dae021 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#12cc4d', endColorstr='#dae021');
+	background-color:#12cc4d;
+	-webkit-border-top-left-radius:6px;
+	-moz-border-radius-topleft:6px;
+	border-top-left-radius:6px;
+	-webkit-border-top-right-radius:6px;
+	-moz-border-radius-topright:6px;
+	border-top-right-radius:6px;
+	-webkit-border-bottom-right-radius:6px;
+	-moz-border-radius-bottomright:6px;
+	border-bottom-right-radius:6px;
+	-webkit-border-bottom-left-radius:6px;
+	-moz-border-radius-bottomleft:6px;
+	border-bottom-left-radius:6px;
+	text-indent:0;
+	border:1px solid #ffffff;
+	display:inline-block;
+	color:#e007e0;
+	font-family:arial;
+	font-size:13px;
+	font-weight:bold;
+	font-style:normal;
+	height:42px;
+	line-height:42px;
+	width:57px;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px #289e69;
+}
+.make_new_room> input[type="submit"]:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dae021), color-stop(1, #12cc4d) );
+	background:-moz-linear-gradient( center top, #dae021 5%, #12cc4d 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dae021', endColorstr='#12cc4d');
+	background-color:#dae021;
+}.make_new_room> input[type="submit"]:active {
+	position:relative;
+	top:1px;
+}
+/* This button was generated using CSSButtonGenerator.com */
+
+	</style>
+	<body>	
+		<div class="pointer" player="1"></div>
+		<div class="ball"></div>
+		
+		<div class="pointer" player="2"></div>
+		<body>
+			</html>
+			<script src="/socket.io/socket.io.js"></script>
+			<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+			<script>			
+	//this object keeps track of cursors on the screen
+	var onscreen={};
+	if(window.jQuery)
+	{
+		console.log("Jquery is loaded");
+	}
+	else
+	{
+		console.log("Jquery failed to load"); 
+	}	
+	if($(document).ready())
+	{
+		
+		var p1= $('.pointer[player="1"]');
+		var p2= $('.pointer[player="2"]');
+		var ball= $('.ball');
+		var socket = io();
+		var dim={
+			ww:$(window).width(),
+			wh:$(window).height()
+		}		
+
+			socket.on("givingpos",function(data)
+			{
+				console.log("GET DATA");
+				p1.css("left",data[0][0].x+"px");
+				p2.css("left",data[0][1].x+"px");		
+				p2.css("top",data[0][1].y+"px");
+				console.log(data[0][1]);
+				if(data[1].state=="running")
+				{
+					ball.css("top",data[1].y+"px");	
+					ball.css("left",data[1].x+"px");	
+				}
+				else
+				{	
+					ball.css("top",Math.floor(dim.wh/2)+"px");	
+					ball.css("left",Math.floor(dim.ww/2)+"px");	
+
+				}
+					//console.log(data[1]);
+				});
+
+			$(document).mousemove(function(e) {
+
+				socket.emit("mousepos",{x:e.pageX});     
+
+			});	
+			$(window).resize(function(){
+				dim.ww=$(window).width();
+				dim.wh=$(window).height();
+
+
+			});
+			socket.on("givedata",function(){
+				socket.emit("givepos",dim);
+			});
+		
+	}
+	
+
+	</script>
